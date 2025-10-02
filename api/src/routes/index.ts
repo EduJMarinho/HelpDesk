@@ -2,12 +2,18 @@ import { Router } from "express";
 import { usersRoutes } from "./users-routes";
 import { calledRoutes } from "./called-routes";
 import { sessionRoutes } from "./sessions-routes";
-import { ensureAuthenticated } from "./ensure-authenticated";
+import { ensureAuthenticated } from "@/middlewares/ensure-authenticated";
+
 
 const routes = Router();
 
-routes.use("/sessions", sessionRoutes);
+//Rotas públicas.
 routes.use("/users", usersRoutes);
-routes.use("/calleds", ensureAuthenticated, calledRoutes);
+routes.use("/sessions", sessionRoutes);
+
+//Rotas privadas.
+routes.use(ensureAuthenticated);
+routes.use("/calleds", calledRoutes);
+
 
 export { routes };

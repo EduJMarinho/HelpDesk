@@ -14,7 +14,7 @@ class NewPassController {
             newPassword: z.string().min(6),
         });
 
-        const { currentPassword, newPassword } = bodySchema.parse(request.body);
+        const { currentPassword, newPassword } = bodySchema.(request.body);
         const { id } = request.user;
 
         const user = await prisma.user.findUnique({ where: { id } });

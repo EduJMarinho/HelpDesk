@@ -44,7 +44,6 @@ model Calleds {
   service   Service
   amount    Float
   technical String
-  filename  String
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
