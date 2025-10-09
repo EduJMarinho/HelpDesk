@@ -23,15 +23,12 @@ enum Service {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-
-  role UserRole @default(customer)
-
-  calleds Calleds[]
-
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      UserRole  @default(customer)
+  calleds   Calleds[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -44,12 +41,27 @@ model Calleds {
   service   Service
   amount    Float
   technical String
+  status    String  @default("aberto")
 
   userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serviceEntries ServiceEntry[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@map("calleds")
+}
+
+model ServiceEntry {
+  id          String    @id @default(uuid())
+  calledId    String    @map("called_id")
+  called      Calleds   @relation(fields: [calledId], references: [id], onDelete: Cascade)
+  description String
+  value       Float
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  @@map("service_entries")
 }

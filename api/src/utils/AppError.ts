@@ -1,3 +1,5 @@
+//AppError.ts
+
 class AppError {
     message: string
     statusCode: number

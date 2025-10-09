@@ -1,25 +1,34 @@
-
+//CalledRoutes.tsx
 
 import { Routes, Route } from "react-router";
-import { Called } from "../pages/Called";;
+import { Called } from "../pages/Called";
 import { NotFound } from "../pages/NotFound";
 import { Confirm } from "../pages/Confirm";
-
+import { AdminPanel } from "../pages/AdminPanel";
+import { TechnicalPanel } from "../pages/TechnicalPanel";
 import { AppLayout } from "../components/AppLayout";
 
 export function CalledRoutes() {
-    return (
-        <Routes>
+  const role = localStorage.getItem("userRole");
 
-            <Route path="/" element={<AppLayout />} >
-                <Route path="/" element={<Called />} />
-                <Route path="/confirm" element={<Confirm />} />
+  return (
+    <Routes>
+      <Route path="/" element={<AppLayout />}>
+        <Route path="/" element={<Called />} />
+        <Route path="/confirm" element={<Confirm />} />
+        <Route
+          path="/:id"
+          element={
+            role === "admin" ? <AdminPanel /> :
+              role === "technical" ? <TechnicalPanel /> :
+                <NotFound />
+          }
+        />
+      </Route>
 
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
-        </Routes>
-    )
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
 

@@ -1,3 +1,5 @@
+//sessions-controller.ts
+
 import { AppError } from "@/utils/AppError";
 import { prisma } from "@/database/prisma";
 import { Request, Response } from "express";
@@ -13,7 +15,12 @@ class SessionsController {
             password: z.string(),
         });
 
-        const { email, password } = bodySchema.parse(request.body);
+        const result = bodySchema.safeParse(request.body);
+        if (!result.success) {
+            throw new AppError(result.error.issues[0].message, 400);
+        }
+
+        const { email, password } = result.data;
 
         const user = await prisma.user.findFirst({ where: { email } });
         if (!user) throw new AppError("E-mail ou senha não confere.", 401);
@@ -35,3 +42,5 @@ class SessionsController {
 }
 
 export { SessionsController };
+
+

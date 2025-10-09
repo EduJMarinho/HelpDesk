@@ -13,6 +13,10 @@
   --color-violet-700: #32083a;
 }
 
+body{
+  background-color: #ffebe3cb;
+}
+
 select {
   appearance: none;
   background-image: url("./assets/chevron-down.svg");

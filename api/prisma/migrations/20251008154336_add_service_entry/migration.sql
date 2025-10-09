@@ -1,0 +1,31 @@
+-- CreateTable
+CREATE TABLE "service_entries" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "called_id" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "value" REAL NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME,
+    CONSTRAINT "service_entries_called_id_fkey" FOREIGN KEY ("called_id") REFERENCES "calleds" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_calleds" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "service" TEXT NOT NULL,
+    "amount" REAL NOT NULL,
+    "technical" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'aberto',
+    "user_id" TEXT NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME,
+    CONSTRAINT "calleds_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+INSERT INTO "new_calleds" ("amount", "created_at", "id", "name", "service", "technical", "updated_at", "user_id") SELECT "amount", "created_at", "id", "name", "service", "technical", "updated_at", "user_id" FROM "calleds";
+DROP TABLE "calleds";
+ALTER TABLE "new_calleds" RENAME TO "calleds";
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;

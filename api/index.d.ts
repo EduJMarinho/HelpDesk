@@ -1,3 +1,5 @@
+//index.d.ts
+
 import { UserRole } from "@prisma/client";
 
 declare global {

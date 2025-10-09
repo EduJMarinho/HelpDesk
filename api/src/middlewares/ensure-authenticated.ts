@@ -1,3 +1,5 @@
+//ensure-authenticated.ts
+
 import { AppError } from "@/utils/AppError";
 import { verify } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";

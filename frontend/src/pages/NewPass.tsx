@@ -1,38 +1,33 @@
-// Alterar Senha
+/// NewPass.tsx - Alterar Senha do user
+
+// NewPass.tsx - Alterar Senha do user
 
 import { useState, useEffect } from "react";
 import { Input } from "../components/input";
 import { Button } from "../components/Button";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LogoImg from "../assets/Logo-HelpDesk.png";
 
 export function NewPass() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [email, setEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const role = localStorage.getItem("userRole");
+  const token = localStorage.getItem("authToken");
+  const defaultPassword = localStorage.getItem("defaultPassword");
 
   useEffect(() => {
-    const credentials = location.state;
-    if (credentials?.email && credentials?.password) {
-      setEmail(credentials.email);
-      setCurrentPassword(credentials.password);
-    } else {
-      const storedEmail = localStorage.getItem("userEmail") || "";
-      setEmail(storedEmail);
+    if (!token || !defaultPassword) {
+      setErrorMessage("Acesso não autorizado. Faça login primeiro.");
+      navigate("/");
     }
-  }, [location.state]);
+  }, [token, defaultPassword, navigate]);
 
   function validateForm() {
-    if (!email) return "Usuário não autenticado.";
-    if (!currentPassword) return "Informe a senha atual.";
+    if (!newPassword || !confirmPassword) return "Preencha todos os campos.";
     if (newPassword.length < 6) return "A nova senha deve ter pelo menos 6 caracteres.";
     if (newPassword !== confirmPassword) return "A nova senha e a confirmação não coincidem.";
     return "";
@@ -51,36 +46,34 @@ export function NewPass() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3333/users/${email}/password`, {
+      const response = await fetch("http://localhost:3333/secure-users/password", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: `Bearer ${localStorage.getItem("authToken")}`, // se usar autenticação
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          currentPassword,
-          newPassword,
+          currentPassword: defaultPassword,
+          newPassword: newPassword,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erro ao atualizar senha.");
+        const contentType = response.headers.get("content-type");
+        let errorMessage = "Erro ao atualizar senha.";
+
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } else {
+          const text = await response.text();
+          console.warn("Resposta não JSON:", text);
+        }
+
+        throw new Error(errorMessage);
       }
 
       alert("Senha atualizada com sucesso!");
-
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userRole", role || "customer");
-
-      if (role === "admin") {
-        localStorage.setItem("isAdmin", "true");
-      } else if (role === "technical") {
-        localStorage.setItem("isTechnical", "true");
-      } else {
-        localStorage.setItem("isCustomer", "true");
-      }
-
       navigate("/");
     } catch (error: any) {
       setErrorMessage(error.message || "Erro inesperado.");
@@ -99,25 +92,8 @@ export function NewPass() {
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Input
             required
-            legend="E-mail"
-            type="email"
-            placeholder="seu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            required
-            legend="Senha atual"
-            placeholder="Senha antiga"
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-          <Input
-            required
             legend="Nova senha"
-            placeholder="Senha substituta"
+            placeholder="Nova senha"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
@@ -138,7 +114,7 @@ export function NewPass() {
           )}
 
           <Button type="submit" isLoading={isLoading}>
-            Cadastrar
+            Trocar Senha
           </Button>
 
           <button
@@ -153,3 +129,5 @@ export function NewPass() {
     </div>
   );
 }
+
+

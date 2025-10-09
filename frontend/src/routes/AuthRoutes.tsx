@@ -1,4 +1,4 @@
-
+//AuthRoutes.tsx
 
 import { Routes, Route } from "react-router-dom";
 import { AuthLayout } from "../components/AuthLayout";
@@ -23,5 +23,7 @@ export function AuthRoutes() {
         </Routes>
     )
 }
+
+
 
 
