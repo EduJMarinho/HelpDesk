@@ -19,7 +19,7 @@ Dev Eduardo Marinho
 
 ## 👥 Personas
 
-- **Admin**: gerencia técnicos, clientes, serviços e chamados.
+- **Administrador**: gerencia técnicos, clientes, serviços e chamados.
 - **Técnico**: executa serviços atribuídos e atualiza chamados.
 - **Cliente**: cria chamados e acompanha histórico.
 
@@ -51,10 +51,10 @@ Dev Eduardo Marinho
 ## 🧪 Como rodar localmente
 
 ### Pré-requisitos
-- Node.js 18+
+- Node.js 
 - PostgreSQL
-- Docker (opcional)
-- npm ou yarn
+
+
 
 
 
