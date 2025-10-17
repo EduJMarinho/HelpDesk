@@ -1,17 +1,16 @@
 //called-controller.ts
 
-
 import { Request, Response } from "express";
 import { prisma } from "@/database/prisma";
 import { Service } from "@prisma/client";
 
 const SERVICE_VALUES: Record<Service, number> = {
     backup: 100,
-    virus: 150,
-    software: 200,
-    internet: 120,
-    printer: 180,
-    peripherals: 160,
+    virus: 85,
+    software: 120,
+    internet: 70,
+    printer: 110,
+    peripherals: 75,
 };
 
 class CalledController {
@@ -53,18 +52,25 @@ class CalledController {
             }
         }
 
+        if (userRole === "customer" && userId) {
+            whereClause.userId = userId;
+        }
+
+        const isCustomer = userRole === "customer";
+
         const calleds = await prisma.calleds.findMany({
             where: whereClause,
             include: {
                 user: true,
                 serviceEntries: true,
             },
-            skip,
-            take: limit,
+            skip: isCustomer ? undefined : skip,
+            take: isCustomer ? undefined : limit,
             orderBy: {
                 createdAt: "desc",
             },
         });
+
 
         const totalCount = await prisma.calleds.count({
             where: whereClause,
@@ -72,12 +78,16 @@ class CalledController {
 
         return res.json({
             calleds,
-            pagination: {
-                totalPages: Math.ceil(totalCount / limit),
-                currentPage: page,
-            },
+            pagination: isCustomer
+                ? null
+                : {
+                    totalPages: Math.ceil(totalCount / limit),
+                    currentPage: page,
+                },
+
         });
     }
+
 
     async search(req: Request, res: Response) {
         const rawName = req.query.name?.toString().toLowerCase() || "";
@@ -85,7 +95,7 @@ class CalledController {
         const allCalleds = await prisma.calleds.findMany({
             include: {
                 user: true,
-                serviceEntries: true, // ✅ já está aqui
+                serviceEntries: true,
             },
             orderBy: {
                 createdAt: "desc",
@@ -104,9 +114,8 @@ class CalledController {
             );
         });
 
-        return res.json(filtered); // ✅ envia tudo, inclusive os serviços adicionais
+        return res.json(filtered);
     }
-
 
     async show(req: Request, res: Response) {
         const { id } = req.params;
@@ -180,13 +189,6 @@ class CalledController {
                 calledId: id,
                 description,
                 value,
-            },
-        });
-
-        await prisma.calleds.update({
-            where: { id },
-            data: {
-                amount: called.amount + value,
             },
         });
 

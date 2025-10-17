@@ -26,13 +26,6 @@ class UsersController {
             return response.status(400).json({ error: "E-mail em uso" });
         }
 
-        if (password !== defaultPasswords.admin && password !== defaultPasswords.technical) {
-            const existingPassword = await prisma.user.findFirst({ where: { password } });
-            if (existingPassword) {
-                return response.status(400).json({ error: "A senha já está em uso por outro usuário" });
-            }
-        }
-
         let role: UserRole = UserRole.customer;
         if (password === defaultPasswords.admin) role = UserRole.admin;
         else if (password === defaultPasswords.technical) role = UserRole.technical;

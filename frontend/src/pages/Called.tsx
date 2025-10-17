@@ -1,5 +1,3 @@
-// src/pages/Called.tsx
-
 import { SERVICES, SERVICES_KEYS } from "../utils/services";
 import { useState, useEffect } from "react";
 import { Select } from "../components/Select";
@@ -108,16 +106,25 @@ export function Called() {
         </div>
       </section>
 
-      <footer className="pt-2">
+      <footer className="pt-2 flex justify-between items-center">
         <Button
           type="submit"
           disabled={!isFormValid}
-          className={`flex items-center justify-center uppercase text-sm rounded-lg text-white h-12 px-6 transition ease-linear ${isFormValid
+          className={`flex items-center justify-center uppercase text-sm rounded-lg text-white h-12 px-6 transition ease-linear ${
+            isFormValid
               ? "bg-orange-300 hover:bg-amber-800"
               : "bg-orange-200 cursor-not-allowed"
-            }`}
+          }`}
         >
           Enviar
+        </Button>
+
+        <Button
+          type="button"
+          className="bg-orange-300 hover:bg-amber-800 text-white text-sm rounded-lg h-12 px-6"
+          onClick={() => navigate("/my-calleds")}
+        >
+          MEUS CHAMADOS
         </Button>
       </footer>
     </form>
